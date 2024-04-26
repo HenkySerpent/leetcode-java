@@ -1,6 +1,3 @@
-import java.util.Arrays;
-import java.util.List;
-
 /**
  * // This is MountainArray's API interface.
  * // You should not implement it, or speculate about its implementation
@@ -9,77 +6,97 @@ import java.util.List;
  * public int length() {}
  * }
  */
- public class SearchInMountainArray1095 {
-    public static void main(String[] args) {
-        List<Integer>   mountainArr = Arrays.asList(1,2,3,5,7,4);
-        System.out.println(findInMountainArray(4, mountainArr));
-        
+interface MountainArray {
+
+  public int get(int index);
+
+
+  public int length() ;
+}
+
+public class SearchInMountainArray1095 {
+  /**
+   * // This is MountainArray's API interface.
+   * // You should not implement it, or speculate about its implementation
+   * interface MountainArray {
+   * public int get(int index) {}
+   * public int length() {}
+   * }
+   */
+
+  public int findInMountainArray(int target, MountainArray mountainArr) {
+    int start = 0;
+    int peak = peakIndexInMountainArray(mountainArr);
+    int ans = -1;
+    if (mountainArr.get(peak) == target) {
+      return peak;
     }
+    ans = search(mountainArr, peak, target, true);
+    if (ans == -1) {
+      ans = search(mountainArr, peak + 1, target, false);
+    }
+    return ans;
 
-    public static  int findInMountainArray(int target, List<Integer> mountainArr) {
-        int peak = peakIndexInMountainArray(mountainArr);
-        int ans = -1;
-        if(mountainArr.get(peak) == target){
-            return peak;
-        }
-        ans = search(mountainArr, peak, target, true);
-        if (ans == -1) {
-            search(mountainArr, peak, target, false);
-        }
-        return ans;
+  }
+
+  public int peakIndexInMountainArray(MountainArray mountainArr) {
+    int start = 0;
+    int end = mountainArr.length() - 1;
+    int ans = start;
+    while (start <= end) {
+      int mid = start + (end - start) / 2;
+      int midValue = mountainArr.get(mid);
+      if (mid != 0 && midValue > mountainArr.get(mid + 1) &&
+          midValue > mountainArr.get(mid - 1)) {
+        return mid;
+      }
+      if (midValue > mountainArr.get(mid + 1)) {
+        end = mid - 1;
+      } else {
+        start = mid + 1;
+      }
 
     }
+    return ans;
 
-    public static int peakIndexInMountainArray(List<Integer> mountainArr) {
-        int start = 0;
-        int end = mountainArr.size() - 1;
-        int ans = start;
-        while (start <= end) {
-            int mid = start + (end - start) / 2;
-            if (mid != 0 && mountainArr.get(mid) > mountainArr.get(mid + 1) &&
-                    mountainArr.get(mid) > mountainArr.get(mid - 1)) {
-                return mid;
-            }
-            if (mountainArr.get(mid) > mountainArr.get(mid + 1)) {
-                end = mid - 1;
-            } else {
-                start = mid + 1;
-            }
+  }
 
-        }
-        return ans;
-
+  public static int search(MountainArray mountainArr, int peak, int target, boolean asc) {
+    int ans = -1;
+    int start;
+    int end;
+    if (asc) {
+      start = 0;
+      end = peak;
+    } else {
+      start = peak;
+      end = mountainArr.length() - 1;
     }
+    while (start <= end) {
+      int mid = start + ((end - start) / 2);
+      int midValue = mountainArr.get(mid);
 
-    public static int search(List<Integer> mountainArr, int peak, int target, boolean asc) {
-        int ans = -1;
-        int start;
-        int end;
-        if (asc) {
-            start = 0;
-            end = peak;
+      if (midValue == target) {
+        return mid;
+      }
+      if (asc) {
+        if (midValue > target) {
+          end = mid - 1;
         } else {
-            start = peak;
-            end = mountainArr.size() - 1;
+          start = mid + 1;
         }
-        while (start <= end) {
-            int mid = start + ((end - start) / 2);
-            if (mountainArr.get(mid) > target) {
-                if (asc) {
-                    end = mid - 1;
-                } else {
-                    start = mid + 1;
-                }
-            } else if (mountainArr.get(mid) < target) {
-                if (asc) {
-                    start = mid + 1;
-                } else {
-                    end = mid - 1;
-                }
-            } else {
-                return mid;
-            }
+      } else {
+        if (midValue > target) {
+
+          start = mid + 1;
+        } else {
+          end = mid - 1;
         }
-        return ans;
+      }
     }
+    return ans;
+
+  }
+
+
 }
